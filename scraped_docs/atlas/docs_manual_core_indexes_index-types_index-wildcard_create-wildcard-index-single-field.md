@@ -1,0 +1,15 @@
+# Create a Wildcard Index on a Single Field - MongoDB Manual v8.0
+
+
+Docs Home / MongoDB Manual / Indexes / Types / Wildcard Create a Wildcard Index on a Single Field On this page About this Task Before You Begin Procedure Results Learn More Wildcard indexes on a single field support queries on any subfield of
+the indexed field. Use wildcard indexes to support queries on field
+names that you don't know in advance or vary between documents. To create a wildcard index on a single field, use the db.collection.createIndex() method and include the wildcard
+specifier ( $** ) in the index key: db. collection . createIndex ( { "<field>.$**" : < sortOrder > } ) About this Task Only use wildcard indexes when the fields you want to index are unknown
+or may change. Wildcard indexes don't perform as well as targeted
+indexes on specific fields. If your collection contains arbitrary field
+names that prevent targeted indexes, consider remodeling your schema to
+have consistent field names. To learn more about targeted indexes, see Create Indexes to Support Your Queries . Before You Begin Create a products collection that contains the following documents: db. products . insertMany ( [ { "product_name" : "Spy Coat" , "attributes" : { "material" : [ "Tweed" , "Wool" , "Leather" ] , "size" : { "length" : 72 , "units" : "inches" } } } , { "product_name" : "Spy Pen" , "attributes" : { "colors" : [ "Blue" , "Black" ] , "secret_feature" : { "name" : "laser" , "power" : "1000" , "units" : "watts" , } } } ] ) Procedure The following operation creates a wildcard index on the attributes field: db. products . createIndex ( { "attributes.$**" : 1 } ) Results The wildcard index supports single-field queries on attributes or
+its embedded fields. For example, the index supports the following
+queries: Query: db. products . find ( { "attributes.size.length" : { $gt : 60 } } ) Output: [ { _id : ObjectId ( "63472196b1fac2ee2e957ef6" ) , product_name : 'Spy Coat' , attributes : { material : [ 'Tweed' , 'Wool' , 'Leather' ] , size : { length : 72 , units : 'inches' } } } ] Query: db. products . find ( { "attributes.material" : "Leather" } ) Output: [ { _id : ObjectId ( "63472196b1fac2ee2e957ef6" ) , product_name : 'Spy Coat' , attributes : { material : [ 'Tweed' , 'Wool' , 'Leather' ] , size : { length : 72 , units : 'inches' } } } ] Query: db. products . find ( { "attributes.secret_feature.name" : "laser" } , { "_id" : 0 , "product_name" : 1 , "attributes.colors" : 1 } ) Output: [ { product_name : 'Spy Pen' , attributes : { colors : [ 'Blue' , 'Black' ] } } ] Wildcard indexes have specific behavior when the indexed field contains
+an embedded object (for example, attributes.secret_feature ). For
+more information, see Wildcard Indexes on Embedded Objects and Arrays . Learn More To learn more about behaviors and use cases for wildcard indexes, see: Create a Wildcard Index on All Fields Include or Exclude Fields in a Wildcard Index Compound Wildcard Indexes Wildcard Index Restrictions Back Wildcard Next Include or Exclude Fields

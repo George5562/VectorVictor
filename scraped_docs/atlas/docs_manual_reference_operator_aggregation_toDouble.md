@@ -1,0 +1,15 @@
+# $toDouble (aggregation) - MongoDB Manual v8.0
+
+
+Docs Home / MongoDB Manual / Aggregation Operations / Reference / Operators $toDouble (aggregation) On this page Definition Behavior Example Definition $toDouble Converts a value to a double. If the value cannot be converted to
+an double, $toDouble errors. If the value is null or
+missing, $toDouble returns null. $toDouble has the following syntax: { $toDouble : < expression > } The $toDouble takes any valid expression . The $toDouble is a shorthand for the following $convert expression: { $convert : { input : < expression > , to : "double" } } Behavior The following table lists the input types that can be converted to a
+double: Input Type Behavior Boolean Returns 0 for false . Returns 1 for true . Double No-op. Returns the double. Decimal Returns the decimal value as a double. The decimal value must fall within the minimum and
+maximum value for a double. You cannot convert a decimal value whose value is less
+than the minimum double value or is greater than the maximum
+double value. Integer Returns the int value as a double. Long Returns the long value as a double. String Returns the numerical value of the string as a double. The string value must be of a base 10 numeric value (e.g. "-5.5" , "123456" ) and fall within the minimum and
+maximum value for a double. You cannot convert a string value of a non-base 10 number (e.g. "0x6400" ) or a value that falls
+outside the minimum and maximum value for a double. Date Returns the number of milliseconds since the epoch that
+corresponds to the date value. The following table lists some conversion to double examples: Example Results $toDouble: true 1 $toDouble: false 0 $toDouble: 2.5 2.5 $toDouble: NumberInt(5) 5 $toDouble: NumberLong(10000) 10000 $toDouble: "-5.5" -5.5 $toDouble: ISODate("2018-03-27T05:04:47.890Z") 1522127087890 Example Create a collection weather with the following documents: db. weather . insertMany ( [ { _id : 1 , date : new Date ( "2018-06-01" ) , temp : "26.1C" } , { _id : 2 , date : new Date ( "2018-06-02" ) , temp : "25.1C" } , { _id : 3 , date : new Date ( "2018-06-03" ) , temp : "25.4C" } , ] ) The following aggregation operation on the weather collection
+parses the temp value and converts to a double: // Define stage to add degrees field with converted value tempConversionStage = { $addFields : { degrees : { $toDouble : { $substrBytes : [ "$temp" , 0 , 4 ] } } } } ; db. weather . aggregate ( [ tempConversionStage , ] ) The operation returns the following documents: { "_id" : 1 , "date" : ISODate ( "2018-06-01T00:00:00Z" ) , "temp" : "26.1C" , "degrees" : 26.1 } { "_id" : 2 , "date" : ISODate ( "2018-06-02T00:00:00Z" ) , "temp" : "25.1C" , "degrees" : 25.1 } { "_id" : 3 , "date" : ISODate ( "2018-06-03T00:00:00Z" ) , "temp" : "25.4C" , "degrees" : 25.4 } Note If the conversion operation encounters an error, the aggregation
+operation stops and throws an error. To override this behavior, use $convert instead. Back $toDecimal Next $toHashedIndexKey

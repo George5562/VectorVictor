@@ -1,0 +1,16 @@
+# $rtrim (aggregation) - MongoDB Manual v8.0
+
+
+Docs Home / MongoDB Manual / Aggregation Operations / Reference / Operators $rtrim (aggregation) On this page Definition Behavior Example Definition $rtrim Removes whitespace characters, including null, or the specified
+characters from the end of a string. $rtrim has the following syntax: { $rtrim : { input : < string > , chars : < string > } } The $rtrim takes a document with the following fields: Field Description input The string to trim. The argument can be any valid expression that resolves to
+a string. For more information on expressions, see Expression Operators . chars Optional. The character(s) to trim from the end of the input . The argument can be any valid expression that resolves to a string. The $rtrim operator breaks down the string into
+individual UTF code point to trim from input . If unspecified, $rtrim removes whitespace
+characters, including the null character. For the list of
+whitespace characters, see Whitespace Characters . Tip See also: $ltrim $trim Behavior By default, $rtrim removes whitespace,
+including the null character, from the end of the input string: Example Results { $rtrim: { input: "  \n good  bye \t  " } } "  \n good  bye" You can override the default characters to trim using the chars field. For example, the following trims any g and e from the end of
+the input string. Since the input ends with a whitespace, neither
+character can be trimmed from the end of the string. Example Results { $rtrim: { input: "ggggoodbyeeeee   ", chars: "ge" } } "ggggoodbyeeeee   " If overriding the default characters to trim, you can explicitly
+include the whitespace character(s) to trim in the chars field. For example, the following trims any space or e from the end of
+the input string. Example Results { $rtrim: { input: " ggggoodbyeeeee   ", chars: "e " } } " ggggoodby" Whitespace Characters By default, $rtrim removes the following whitespace,
+including the null character: Unicode Escape sequence Description U+0000 '0' Null character U+0020 ' ' Space U+0009 't' Horizontal tab U+000A 'n' Line feed/new line U+000B 'v' Vertical tab U+000C 'f' Form feed U+000D 'r' Carriage return U+00A0 Non-breaking space U+1680 Ogham space mark U+2000 En quad U+2001 Em quad U+2002 En space U+2003 Em space U+2004 Three-per-em space U+2005 Four-per-em space U+2006 Six-per-em space U+2007 Figure space U+2008 Punctuation space U+2009 Thin space U+200A Hair space Example Consider an inventory collection with the following documents: { "_id" : 1 , "item" : "ABC1" , quarter : "13Q1" , "description" : " product 1" } { "_id" : 2 , "item" : "ABC2" , quarter : "13Q4" , "description" : "product 2 \n The product is in stock. \n \n " } { "_id" : 3 , "item" : "XYZ1" , quarter : "14Q2" , "description" : null } The following operation uses the $rtrim operator to
+remove trailing whitespace from the description field: db. inventory . aggregate ( [ { $project : { item : 1 , description : { $rtrim : { input : "$description" } } } } ]) The operation returns the following results: { "_id" : 1 , "item" : "ABC1" , "description" : " product 1" } { "_id" : 2 , "item" : "ABC2" , "description" : "product 2 \n The product is in stock." } { "_id" : 3 , "item" : "XYZ1" , "description" : null } Back $round Next $sampleRate

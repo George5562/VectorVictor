@@ -1,0 +1,14 @@
+# $type (aggregation) - MongoDB Manual v8.0
+
+
+Docs Home / MongoDB Manual / Aggregation Operations / Reference / Operators $type (aggregation) On this page Definition Behavior Example Definition $type Returns a string that specifies the BSON type of the argument. $type has the following operator expression
+syntax : { $type : < expression > } The argument can be any valid expression . Tip See also: $isNumber - checks if the argument is a number. $type (Query) - filters fields based on BSON type. Behavior $type Unlike the $type query operator, which matches array
+elements based on their BSON type, the $type aggregation operator does not examine array elements. Instead,
+when passed an array as its argument, the $type aggregation
+operator returns the type of the argument, i.e. "array" . If the argument is a field that is missing in the input document, $type returns the string "missing" . The following table shows the $type output for several
+common types of expressions: Example Results { $type: "a" } "string" { $type: /a/ } "regex" { $type: 1 } "double" { $type: NumberLong(627) } "long" { $type: { x: 1 } } "object" { $type: [ [ 1, 2, 3 ] ] } "array" Note In the case of a literal array such as [ 1, 2, 3 ] ,
+enclose the expression in an outer set
+of array brackets to prevent MongoDB from parsing [ 1, 2, 3 ] as an argument list with three arguments ( 1, 2, 3 ). Wrapping the array [ 1, 2, 3 ] in a $literal expression
+achieves the same result. See operator expression syntax forms for more information. Available Types Type Number Alias Notes Double 1 "double" String 2 "string" Object 3 "object" Array 4 "array" Binary data 5 "binData" Undefined 6 "undefined" Deprecated. ObjectId 7 "objectId" Boolean 8 "bool" Date 9 "date" Null 10 "null" Regular Expression 11 "regex" DBPointer 12 "dbPointer" Deprecated. JavaScript 13 "javascript" Symbol 14 "symbol" Deprecated. 32-bit integer 16 "int" Timestamp 17 "timestamp" 64-bit integer 18 "long" Decimal128 19 "decimal" Min key -1 "minKey" Max key 127 "maxKey" If the argument is a field that is missing in the input document, $type returns the string "missing" . Example This example uses a collection named coll with
+the following documents : { _id : 0 , a : 8 } { _id : 1 , a : [ 41.63 , 88.19 ] } { _id : 2 , a : { a : "apple" , b : "banana" , c : "carrot" } } { _id : 3 , a : "caribou" } { _id : 4 , a : NumberLong ( 71 ) } { _id : 5 } The following aggregation operation uses the $type operator to display the type of field a for all documents
+as part of the $project stage. db. coll . aggregate ( [ { $project : { a : { $type : "$a" } } }]) The operation returns the following: { _id : 0 , "a" : "double" } { _id : 1 , "a" : "array" } { _id : 2 , "a" : "object" } { _id : 3 , "a" : "string" } { _id : 4 , "a" : "long" } { _id : 5 , "a" : "missing" } Back $trunc Next $unsetField

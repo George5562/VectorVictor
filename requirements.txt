@@ -1,0 +1,11 @@
+requests==2.31.0
+beautifulsoup4==4.12.2
+python-dotenv==1.0.0
+selenium==4.15.2
+webdriver_manager==4.0.1
+openai==1.12.0
+dspy==2.1.10
+tqdm==4.66.2
+pandas~=2.1.1
+numpy==1.26.4
+tiktoken==0.6.0
