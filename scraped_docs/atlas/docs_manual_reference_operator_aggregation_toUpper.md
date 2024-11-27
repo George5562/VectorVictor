@@ -1,7 +1,0 @@
-# $toUpper (aggregation) - MongoDB Manual v8.0
-
-
-Docs Home / MongoDB Manual / Aggregation Operations / Reference / Operators $toUpper (aggregation) On this page Definition Behavior Example Definition $toUpper Converts a string to uppercase, returning the result. $toUpper has the following syntax: { $toUpper : < expression > } The argument can be any expression as long as it resolves to a string. For more information on
-expressions, see Expression Operators . If the argument resolves to null, $toUpper returns an
-empty string "" . Behavior $toUpper only has a well-defined behavior for strings of ASCII characters. Example Consider a inventory collection with the following documents: db. inventory . insertMany ( [ { "_id" : 1 , "item" : "ABC1" , quarter : "13Q1" , "description" : "PRODUCT 1" } , { "_id" : 2 , "item" : "abc2" , quarter : "13Q4" , "description" : "Product 2" } , { "_id" : 3 , "item" : "xyz1" , quarter : "14Q2" , "description" : null } ] ) The following operation uses the $toUpper operator to return
-uppercase item and uppercase description values: db. inventory . aggregate ( [ { $project : { item : { $toUpper : "$item" } , description : { $toUpper : "$description" } } } ] ) The operation returns the following results: { "_id" : 1 , "item" : "ABC1" , "description" : "PRODUCT 1" } { "_id" : 2 , "item" : "ABC2" , "description" : "PRODUCT 2" } { "_id" : 3 , "item" : "XYZ1" , "description" : "" } Back $toLower Next $toUUID
