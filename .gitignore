@@ -1,6 +1,7 @@
 # Project-specific directories
 llm_docs/
 processed_docs/
+scraped_docs/
 
 # Python
 __pycache__/
