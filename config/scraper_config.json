@@ -1,0 +1,64 @@
+{
+    "selectors": {
+        "navigation": {
+            "github": ".js-navigation-container",
+            "mkdocs": ".md-nav",
+            "generic": "nav, .nav, .navigation, .menu"
+        },
+        "content": {
+            "github": ".markdown-body",
+            "mkdocs": ".md-content",
+            "generic": "article, .content, main, .main"
+        },
+        "links": {
+            "github": "a[href$='.md']",
+            "mkdocs": ".md-nav__link",
+            "generic": "a[href*='doc'], a[href*='guide'], a[href*='tutorial'], a[href*='api']"
+        }
+    },
+    "file_types": [
+        ".md",
+        ".mdx",
+        ".rst",
+        ".txt"
+    ],
+    "ignore_patterns": [
+        "node_modules",
+        "build",
+        "dist",
+        "site-packages",
+        "__pycache__",
+        ".git"
+    ],
+    "max_depth": 5,
+    "timeout": 30,
+    "retry_attempts": 3,
+    "delay_between_requests": 1.0,
+    "headers": {
+        "User-Agent": "Mozilla/5.0 (compatible; DocScraper/1.0; +http://example.com/bot)"
+    },
+    "extraction_rules": {
+        "remove_elements": [
+            "script",
+            "style",
+            "footer",
+            "header",
+            ".sidebar"
+        ],
+        "keep_attributes": [
+            "href",
+            "src",
+            "alt",
+            "title"
+        ]
+    },
+    "output_format": {
+        "file_extension": ".md",
+        "structure_file": "structure.json",
+        "metadata": {
+            "include_title": true,
+            "include_date": true,
+            "include_author": true
+        }
+    }
+}

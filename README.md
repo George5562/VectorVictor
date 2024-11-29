@@ -1,18 +1,34 @@
-# VectorVictor 
+# Vector Victor: Beyond Embeddings
 
 *"What's your vector, Victor?"* - Now you'll know!
 
 A documentation vectorization system that extracts, analyzes, and organizes technical documentation for semantic search and LLM consumption. VectorVictor transforms your docs into a searchable knowledge base with the power of GPT-4 and vector embeddings.
 
+## Overview
+
+Vector Victor is an intelligent documentation processing system that analyzes, extracts, and maps relationships across technical documentation sets. Unlike traditional embedding-based approaches, Vector Victor uses advanced LLM-based parsing combined with DSPy Chain-of-Thought reasoning to understand documentation structure and relationships at a deeper semantic level.
+
+## Why No Vectors?
+
+During our development, we discovered that traditional vector embeddings, while useful for simple similarity searches, often miss the nuanced relationships and hierarchical structure present in technical documentation. By leveraging DSPy's Chain-of-Thought capabilities and GPT-4's advanced reasoning, we can:
+
+1. Extract meaningful section hierarchies
+2. Identify complex relationships between concepts
+3. Understand prerequisite knowledge chains
+4. Map implementation patterns and examples
+5. Generate more accurate documentation graphs
+
 ## Features
 
 - **Flexible Documentation Extraction**: Support for both GitHub repositories and web-based documentation
 - **Intelligent Analysis**: Uses GPT-4 for content understanding and summarization
-- **Vector Search**: Semantic search using OpenAI's text-embedding-3-small model
+- **Smart Documentation Processing**: Hierarchical section extraction, code example detection and categorization, relationship mapping between concepts, prerequisite chain identification, framework-specific pattern recognition
+- **Relationship Types**: IMPLEMENTS, DEPENDS_ON, EXTENDS, RELATED_TO, EXAMPLE_OF, PREREQUISITE, NEXT_TOPIC, NEXT_IN_SECTION
 - **DSPy Integration**: Structured information extraction using DSPy's ChainOfThought
 - **Progress Tracking**: Resumable processing for large documentation sets
 
 ## Project Structure
+
 ```
 doc_scraper/
 ├── scraped_docs/           # Raw scraped documentation
@@ -21,33 +37,37 @@ doc_scraper/
 │   └── [project_name]/    # Project-specific processed docs
 │       ├── index.json     # Document metadata and organization
 │       ├── content.json   # Processed document content
-│       ├── embeddings.json # Vector embeddings (JSON format)
-│       └── embeddings.npz  # Compressed embeddings (NumPy format)
+│       ├── relationships.json # Relationship mapping
+│       └── graph.json     # Documentation graph
 ├── scraper.py            # Documentation scraper
 ├── doc_processor.py      # Content processor and analyzer
-├── convert_embeddings.py # Embedding format converter
+├── relationship_extractor.py # Relationship mapping
 └── test_api.py          # API connection tester
 ```
 
 ## Setup
 
 1. Create and activate a virtual environment:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. Create a `.env` file with your OpenAI API key:
+
 ```
 OPENAI_API_KEY=your_api_key_here
 ```
 
 4. Test your setup:
+
 ```bash
 python test_api.py
 ```
@@ -59,22 +79,26 @@ python test_api.py
 The scraper supports two types of documentation sources:
 
 #### GitHub Documentation
+
 ```bash
 python scraper.py --url https://github.com/username/repo/docs --project project_name
 ```
 
 The scraper will:
+
 1. Detect if the URL points to a GitHub docs directory
 2. Clone the repository if needed
 3. Extract markdown and other documentation files
 4. Save raw content in `scraped_docs/[project_name]`
 
 #### Web Documentation
+
 ```bash
 python scraper.py --url https://docs.example.com --project project_name --content-selector "article" --link-selector "a"
 ```
 
 Optional arguments:
+
 - `--content-selector`: CSS selector for main content (default: "article")
 - `--link-selector`: CSS selector for navigation links (default: "a")
 - `--max-depth`: Maximum recursion depth for link following (default: 5)
@@ -88,77 +112,48 @@ python doc_processor.py --project [project_name]
 ```
 
 Processing steps:
+
 1. Content extraction from scraped documents
-2. Vector embedding generation using text-embedding-3-small
-3. Content analysis using DSPy and GPT-4:
-   - Document title extraction
-   - Summary generation
-   - Key concept identification
-   - Code example extraction
-   - Dependency analysis
-   - Related topic identification
-4. Progress tracking in `llm_docs/progress.json`
-5. Index maintenance in `llm_docs/index.json`
+2. Hierarchical section extraction
+3. Relationship mapping between concepts
+4. Prerequisite chain identification
+5. Framework-specific pattern recognition
+6. Progress tracking in `llm_docs/progress.json`
+7. Index maintenance in `llm_docs/index.json`
 
-### 3. Embedding Optimization
+### 3. Relationship Extraction
 
-Convert JSON embeddings to compressed NumPy format:
+Extract relationships between concepts:
 
 ```bash
-python convert_embeddings.py --input llm_docs/[project_name]
+python relationship_extractor.py --input llm_docs/[project_name]
 ```
 
-This conversion:
-1. Reduces storage size through compression
-2. Enables memory-mapped file access
-3. Improves loading speed and memory efficiency
+This extraction:
+
+1. Maps connections between concepts
+2. Identifies relationship types (IMPLEMENT, DEPENDS_ON, etc.)
+3. Saves relationships in `llm_docs/relationships.json`
 
 ### Working with Processed Documentation
 
-Example of semantic search using the processed documentation:
+Example of using the processed documentation:
 
 ```python
 import json
-import numpy as np
-from openai import OpenAI
 from pathlib import Path
 
-def semantic_search(query: str, project_dir: str, top_k: int = 3):
-    # Initialize OpenAI client
-    client = OpenAI()
-    
-    # Generate query embedding
-    query_embedding = client.embeddings.create(
-        input=query,
-        model="text-embedding-3-small"
-    ).data[0].embedding
-    
+def load_documentation(project_dir: str):
     # Load document content and metadata
     with open(Path(project_dir) / 'content.json') as f:
         content = json.load(f)
-    
-    # Load compressed embeddings
-    embeddings = np.load(Path(project_dir) / 'embeddings.npz')
-    
-    # Calculate similarities
-    similarities = {
-        doc_id: np.dot(query_embedding, doc_embedding) 
-        for doc_id, doc_embedding in embeddings.items()
-    }
-    
-    # Get top matches
-    top_matches = sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:top_k]
-    
-    # Return results with content
-    return [
-        {
-            'doc_id': doc_id,
-            'similarity': score,
-            'content': content[doc_id]['content'],
-            'metadata': content[doc_id]['metadata']
-        }
-        for doc_id, score in top_matches
-    ]
+  
+    # Load relationships
+    with open(Path(project_dir) / 'relationships.json') as f:
+        relationships = json.load(f)
+  
+    # Use the loaded data for further analysis or visualization
+    return content, relationships
 ```
 
 ## How It Works
@@ -176,36 +171,39 @@ class DocumentAnalyzer:
 ```
 
 This creates a chain that:
+
 1. Takes documentation content as input
 2. Uses GPT-4 to understand the content
 3. Extracts structured information in a consistent format
 
-### 2. Embedding Generation
+### 2. Relationship Mapping
 
-The system uses OpenAI's text-embedding-3-small model for vector embeddings:
+The system uses DSPy's Chain-of-Thought reasoning to map connections between concepts:
 
 ```python
-def get_embedding(text: str) -> List[float]:
-    client = openai.OpenAI()
-    response = client.embeddings.create(
-        input=text,
-        model="text-embedding-3-small"
+def map_relationships(content: str) -> List[Relationship]:
+    client = dspy.ChainOfThought(
+        "content -> relationships"
     )
-    return response.data[0].embedding
+    response = client.analyze(content)
+    return response.data[0].relationships
 ```
 
-These embeddings enable:
-1. Semantic similarity search
-2. Content clustering
-3. Related document finding
+These relationships enable:
+
+1. Accurate documentation graphs
+2. Contextual processing
+3. Nuanced understanding of documentation structure
 
 ### 3. Progress Tracking
 
 The system maintains processing state in two files:
+
 - `progress.json`: Tracks processed files
 - `index.json`: Maintains document organization
 
 This enables:
+
 1. Resumable processing for large documentation sets
 2. Progress monitoring
 3. Efficient updates of specific documents

@@ -1,0 +1,57 @@
+{
+    "relationship_types": [
+        "IMPLEMENTS",
+        "DEPENDS_ON",
+        "EXTENDS",
+        "RELATED_TO",
+        "EXAMPLE_OF",
+        "PREREQUISITE",
+        "NEXT_TOPIC",
+        "NEXT_IN_SECTION"
+    ],
+    "section_types": {
+        "overview": {
+            "title": "Overview",
+            "keywords": ["overview", "introduction", "get started", "getting started"]
+        },
+        "installation": {
+            "title": "Installation",
+            "keywords": ["install", "setup", "getting started", "quickstart"]
+        },
+        "concepts": {
+            "title": "Core Concepts",
+            "keywords": ["concept", "fundamental", "basic", "core"]
+        },
+        "guides": {
+            "title": "Guides",
+            "keywords": ["guide", "tutorial", "how to", "howto"]
+        },
+        "api": {
+            "title": "API Reference",
+            "keywords": ["api", "reference", "method", "function"]
+        },
+        "examples": {
+            "title": "Examples",
+            "keywords": ["example", "demo", "sample"]
+        },
+        "customization": {
+            "title": "Customization",
+            "keywords": ["custom", "configure", "extend", "modify"]
+        }
+    },
+    "code_languages": {
+        "python": ["py", "python"],
+        "javascript": ["js", "javascript", "jsx", "ts", "typescript"],
+        "html": ["html", "htm"],
+        "css": ["css", "scss", "sass", "less"],
+        "shell": ["sh", "bash", "zsh", "shell"],
+        "json": ["json"],
+        "yaml": ["yml", "yaml"],
+        "markdown": ["md", "markdown"]
+    },
+    "model_config": {
+        "model": "gpt-4o-mini",
+        "temperature": 0.0,
+        "max_tokens": 1000
+    }
+}

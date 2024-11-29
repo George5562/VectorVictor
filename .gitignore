@@ -1,7 +1,6 @@
 # Project-specific directories
-llm_docs/
-processed_docs/
-scraped_docs/
+scraped_docs/*
+llm_docs/*
 
 # Python
 __pycache__/
@@ -27,6 +26,7 @@ wheels/
 
 # Virtual Environment
 venv/
+venv_new/
 env/
 ENV/
 .env

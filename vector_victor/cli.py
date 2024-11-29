@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 from .scraper import DocScraper
 from .doc_processor import DocumentProcessor
-from .convert_embeddings import convert_embeddings
 
 def main():
     """Main CLI entrypoint."""
@@ -28,10 +27,6 @@ def main():
     process_parser = subparsers.add_parser("process", help="Process documentation")
     process_parser.add_argument("--project", required=True, help="Project name")
     
-    # Convert command
-    convert_parser = subparsers.add_parser("convert", help="Convert embeddings to compressed format")
-    convert_parser.add_argument("--project", required=True, help="Project name")
-    
     args = parser.parse_args()
     
     # Load environment variables
@@ -48,13 +43,7 @@ def main():
             return
         
         processor = DocumentProcessor(api_key, f"scraped_docs/{args.project}")
-        processor.process_all()
-    
-    elif args.command == "convert":
-        convert_embeddings(Path(f"llm_docs/{args.project}"))
-    
-    else:
-        parser.print_help()
+        processor.process_directory(Path(f"scraped_docs/{args.project}"))
 
 if __name__ == "__main__":
     main()
